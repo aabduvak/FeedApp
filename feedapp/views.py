@@ -5,6 +5,8 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db.models import Count
 
+from .util import group_required
+
 from .forms import PostForm
 from .models import Post, Report
 # Create your views here.
@@ -25,7 +27,8 @@ def index(request):
 
   return render(request, 'feedapp/index.html', context)
 
-@permission_required('feedapp.view_report', raise_exception=True)
+#@permission_required('feedapp.view_report', raise_exception=True)
+@group_required("Administrator", "Staff", "Moderator")
 def reports(request):
   reports = Post.objects.annotate(times_reported=Count('report')).filter(times_reported__gt=0).all()
 
